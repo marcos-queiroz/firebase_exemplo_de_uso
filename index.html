@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Teste com Firebase</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+
+    <div class="container">
+        <div class="row">
+            <header class="col-md-12">
+                <h1>Usuários</h1>
+            </header>
+
+            <div class="col-md-12">
+                <form id="formUser" action="" method="post" class="row">
+                    <div class="form-group col-md-4">
+                        <label for="username">Nome</label>
+                        <input type="text" name="username" value="" class="form-control" autofocus required>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="email">e-mail</label>
+                        <input type="mail" name="email" value="" class="form-control" required>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="cargo">Cargo</label>
+                        <input type="text" name="cargo" value="" class="form-control">
+                    </div>
+
+                    <div class="col-md-12">
+                        <button type="submit" name="button" class="btn btn-flat btn-primary">Adicionar</button>
+                    </div>
+                </form>
+                <br><br>
+            </div>
+
+            <div class="col-md-12">
+                <div id="users"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
+    <script>
+    // json dos usuarios
+    var users = new Array();
+
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyAJ6EoVHMK2VkXMYmoRWdJc6M-eGyA42mw",
+        authDomain: "testebee-5e6b5.firebaseapp.com",
+        databaseURL: "https://testebee-5e6b5.firebaseio.com",
+        projectId: "testebee-5e6b5",
+        storageBucket: "",
+        messagingSenderId: "327502151476"
+    };
+    firebase.initializeApp(config);
+
+    $("body").on('submit', '#formUser', function() {
+        // captura os valores
+        var username = $("input[type=text][name=username]").val();
+        var email = $("input[type=mail][name=email]").val();
+        var cargo = $("input[type=text][name=cargo]").val();
+        // limpa o formulario
+        $("input[type=text][name=username]").val('');
+        $("input[type=mail][name=email]").val('');
+        $("input[type=text][name=cargo]").val('');
+        // foca no imput username
+        $("input[type=text][name=username]").focus();
+
+        var data = {
+            username: username,
+            email: email,
+            cargo: cargo
+        };
+
+        users.push(data);
+        setData("users/", users);
+
+        return false;
+    });
+
+    var starCountRef = firebase.database().ref('/users/');
+    starCountRef.on('value', function(snapshot) {
+        if(snapshot.val()){
+            users = snapshot.val();
+            // console.log(users);
+
+            var html = "<table class='table table-bordered'>";
+            html += "<thead>";
+            html += "<tr>";
+            html += "<th>Nome</th>";
+            html += "<th>e-mail</th>";
+            html += "<th>Cargo</th>";
+            html += "</tr>";
+            html += "</thead>";
+            html += "<tbody>";
+
+            $.each(users, function(i, u){
+                html += "<tr>";
+                html += "<td>"+ u.username +"</td>";
+                html += "<td>"+ u.email +"</td>";
+                html += "<td>"+ u.cargo +"</td>";
+                html += "</tr>";
+            });
+
+            html += "</tbody>";
+            html += "</table>";
+
+            $("#users").html(html);
+        }else{
+            // console.log("Nada cadastrado.");
+            $("#users").html("<strong>Nada cadastrado.</strong>");
+        }
+
+    });
+
+    </script>
+
+    <script type="text/javascript">
+
+    function writeUserData(userId, name, email, imageUrl) {
+        firebase.database().ref('users/' + userId).set({
+            username: name,
+            email: email,
+            profile_picture : imageUrl
+        });
+    }
+
+    function setData(table, data) {
+        firebase.database().ref(table).set(data);
+    }
+
+    function readUserData(userId){
+        // var userId = firebase.auth().currentUser.uid;
+        return firebase.database().ref('/users/' + userId).once('value').then(function(snapshot) {
+            var username = snapshot.val().username;
+            var email = snapshot.val().email;
+            var profile_picture = snapshot.val().profile_picture;
+
+
+            console.log("username: "+ username);
+            console.log("email: "+ email);
+            console.log("profile_picture: "+ profile_picture);
+        });
+    }
+
+    function readUserDatas(){
+        return firebase.database().ref('/users/').once('value').then(function(snapshot) {
+            console.log(snapshot.val());
+            console.table(snapshot.val());
+        });
+    }
+
+    // readUserData('001');
+
+    // writeUserData('001', 'Marcos Queiroz', 'marcos@beecoffee.com.br', 'marcos.jpg');
+    </script>
+</body>
+</html>
