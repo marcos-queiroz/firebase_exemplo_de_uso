@@ -34,13 +34,19 @@
                     </div>
 
                     <div class="col-md-12">
-                        <button type="submit" name="button" class="btn btn-flat btn-primary">Adicionar</button>
+                        <button type="submit" name="button" class="btn btn-primary">Adicionar</button>
                     </div>
                 </form>
                 <br><br>
             </div>
 
-            <div class="col-md-12">
+            <hr style="border: solid 1px;">
+
+            <div class="col-md-2">
+                <button type="button" name="button" class="btn btn-danger" onclick="deletTable('users')">Zerar BD</button>
+            </div>
+
+            <div class="col-md-10">
                 <div id="users"></div>
             </div>
         </div>
@@ -84,8 +90,8 @@
             cargo: cargo
         };
 
-        users.push(data);
-        setData("users/", users);
+        // users.push(data);
+        setData("users/", data);
 
         return false;
     });
@@ -122,49 +128,28 @@
             // console.log("Nada cadastrado.");
             $("#users").html("<strong>Nada cadastrado.</strong>");
         }
-
     });
 
     </script>
 
     <script type="text/javascript">
 
-    function writeUserData(userId, name, email, imageUrl) {
-        firebase.database().ref('users/' + userId).set({
-            username: name,
-            email: email,
-            profile_picture : imageUrl
-        });
-    }
-
     function setData(table, data) {
-        firebase.database().ref(table).set(data);
+        // firebase.database().ref(table).set(data);
+
+        var newPostKey = firebase.database().ref().child(table).push().key;
+
+        var updates = {};
+        updates[table + newPostKey] = data;
+
+        return firebase.database().ref().update(updates);
     }
 
-    function readUserData(userId){
-        // var userId = firebase.auth().currentUser.uid;
-        return firebase.database().ref('/users/' + userId).once('value').then(function(snapshot) {
-            var username = snapshot.val().username;
-            var email = snapshot.val().email;
-            var profile_picture = snapshot.val().profile_picture;
-
-
-            console.log("username: "+ username);
-            console.log("email: "+ email);
-            console.log("profile_picture: "+ profile_picture);
-        });
+    function deletTable(table) {
+        users = [];
+        firebase.database().ref(table).remove();
     }
 
-    function readUserDatas(){
-        return firebase.database().ref('/users/').once('value').then(function(snapshot) {
-            console.log(snapshot.val());
-            console.table(snapshot.val());
-        });
-    }
-
-    // readUserData('001');
-
-    // writeUserData('001', 'Marcos Queiroz', 'marcos@beecoffee.com.br', 'marcos.jpg');
     </script>
 </body>
 </html>
