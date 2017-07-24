@@ -63,12 +63,12 @@
 
     // Initialize Firebase
     var config = {
-        apiKey: "AIzaSyAJ6EoVHMK2VkXMYmoRWdJc6M-eGyA42mw",
-        authDomain: "testebee-5e6b5.firebaseapp.com",
-        databaseURL: "https://testebee-5e6b5.firebaseio.com",
-        projectId: "testebee-5e6b5",
+        apiKey: "SuaAPIKey",
+        authDomain: "seu-banco-no-firebase.firebaseapp.com",
+        databaseURL: "https://seu-banco-no-firebase.firebaseio.com",
+        projectId: "seu-banco-no-firebase",
         storageBucket: "",
-        messagingSenderId: "327502151476"
+        messagingSenderId: "SeuSenderId"
     };
     firebase.initializeApp(config);
 
@@ -96,6 +96,7 @@
         return false;
     });
 
+    // fica monitorando a tabela users
     var starCountRef = firebase.database().ref('/users/');
     starCountRef.on('value', function(snapshot) {
         if(snapshot.val()){
@@ -134,9 +135,10 @@
 
     <script type="text/javascript">
 
+    // função para inserir um novo registro na tabela
     function setData(table, data) {
         // firebase.database().ref(table).set(data);
-
+        // gera um novo KEY para o item a ser inserido
         var newPostKey = firebase.database().ref().child(table).push().key;
 
         var updates = {};
@@ -144,7 +146,8 @@
 
         return firebase.database().ref().update(updates);
     }
-
+    
+    // função para deletar a tabela
     function deletTable(table) {
         users = [];
         firebase.database().ref(table).remove();
