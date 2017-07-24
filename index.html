@@ -126,7 +126,6 @@
 
             $("#users").html(html);
         }else{
-            // console.log("Nada cadastrado.");
             $("#users").html("<strong>Nada cadastrado.</strong>");
         }
     });
@@ -137,14 +136,7 @@
 
     // função para inserir um novo registro na tabela
     function setData(table, data) {
-        // firebase.database().ref(table).set(data);
-        // gera um novo KEY para o item a ser inserido
-        var newPostKey = firebase.database().ref().child(table).push().key;
-
-        var updates = {};
-        updates[table + newPostKey] = data;
-
-        return firebase.database().ref().update(updates);
+        firebase.database().ref(table).push(data);
     }
     
     // função para deletar a tabela
